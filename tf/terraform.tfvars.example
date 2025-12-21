@@ -1,0 +1,65 @@
+kube_server_farm = {
+  jumpbox_administration_host = {
+    instance_type = "t2.nano"
+    root_block_device = {
+      volume_size           = 10
+      volume_type           = "gp3"
+      delete_on_termination = true
+      encrypted             = true
+    }
+    subnet_id = "subnet-xxxxxxxxxx"
+    security_group_type = "jumpbox"
+    tags = {
+      Name        = "Jumpbox Server"
+      Environment = "Dev"
+    }
+  }
+  kubernetes_server = {
+    instance_type = "t2.small"
+    root_block_device = {
+      volume_size           = 20
+      volume_type           = "gp3"
+      delete_on_termination = true
+      encrypted             = true
+    }
+    subnet_id = "subnet-xxxxxxxxxx"
+    security_group_type = "kubernetes"
+    tags = {
+      Name        = "Kubernetes Server"
+      Environment = "Dev"
+    }
+  }
+  node_0_Kubernetes_worker_node = {
+    instance_type = "t2.small"
+    root_block_device = {
+      volume_size           = 20
+      volume_type           = "gp3"
+      delete_on_termination = true
+      encrypted             = true
+    }
+    subnet_id = "subnet-xxxxxxxxxx"
+    security_group_type = "kubernetes"
+    tags = {
+      Name        = "Kubernetes worker node 0"
+      Environment = "Dev"
+    }
+  }
+  node_1_Kubernetes_worker_node = {
+    instance_type = "t2.small"
+    root_block_device = {
+      volume_size           = 20
+      volume_type           = "gp3"
+      delete_on_termination = true
+      encrypted             = true
+    }
+    subnet_id = "subnet-xxxxxxxxxx"
+    security_group_type = "kubernetes"
+    tags = {
+      Name        = "Kubernetes worker node 1"
+      Environment = "Dev"
+    }
+  }
+}
+
+allowed_ssh_cidr = ["0.0.0.0/0"]
+ssh_public_key = "ssh-rsa AAAAAAAAB3...... user@example.com"
