@@ -10,6 +10,7 @@ variable "kube_server_farm" {
     })
     subnet_id           = string
     security_group_type = string
+    user_data_type      = string
     tags                = map(string)
   }))
 }

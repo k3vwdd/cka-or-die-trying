@@ -9,6 +9,7 @@ kube_server_farm = {
     }
     subnet_id = "subnet-xxxxxxxxxx"
     security_group_type = "jumpbox"
+    user_data = "jumpbox"
     tags = {
       Name        = "Jumpbox Server"
       Environment = "Dev"
@@ -24,6 +25,7 @@ kube_server_farm = {
     }
     subnet_id = "subnet-xxxxxxxxxx"
     security_group_type = "kubernetes"
+    user_data = "kubernetes"
     tags = {
       Name        = "Kubernetes Server"
       Environment = "Dev"
@@ -39,6 +41,7 @@ kube_server_farm = {
     }
     subnet_id = "subnet-xxxxxxxxxx"
     security_group_type = "kubernetes"
+    user_data = "kubernetes"
     tags = {
       Name        = "Kubernetes worker node 0"
       Environment = "Dev"
@@ -54,6 +57,7 @@ kube_server_farm = {
     }
     subnet_id = "subnet-xxxxxxxxxx"
     security_group_type = "kubernetes"
+    user_data = "kubernetes"
     tags = {
       Name        = "Kubernetes worker node 1"
       Environment = "Dev"
