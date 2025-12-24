@@ -1,6 +1,5 @@
-# Example terraform.tfvars file
-# Copy this to terraform.tfvars and fill in your values
-# Note: subnet_id is no longer needed - subnets are looked up dynamically from the default VPC
+# CI/CD configuration file - contains non-sensitive infrastructure config
+# Sensitive values (ssh_public_key, allowed_ssh_cidr) are passed via GitHub Secrets
 
 kube_server_farm = {
   jumpbox_administration_host = {
@@ -64,6 +63,3 @@ kube_server_farm = {
     }
   }
 }
-
-allowed_ssh_cidr = ["0.0.0.0/0"]  # Replace with your IP: ["x.x.x.x/32"]
-ssh_public_key   = "ssh-rsa AAAAAAAAB3...... user@example.com"

@@ -8,7 +8,7 @@ resource "aws_instance" "my_kube_cluster" {
     delete_on_termination = each.value.root_block_device.delete_on_termination
     encrypted             = each.value.root_block_device.encrypted
   }
-  subnet_id                   = each.value.subnet_id
+  subnet_id                   = data.aws_subnets.default.ids[0]
   vpc_security_group_ids      = each.value.security_group_type == "jumpbox" ? [aws_security_group.jumpbox_sg.id] : [aws_security_group.kubernetes_sg.id]
   associate_public_ip_address = each.value.security_group_type == "jumpbox" ? true : false
   user_data                   = each.value.user_data_type == "jumpbox" ? file("../scripts/web_server_user_data_script.sh") : null

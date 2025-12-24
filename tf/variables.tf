@@ -8,7 +8,6 @@ variable "kube_server_farm" {
       delete_on_termination = bool
       encrypted             = bool
     })
-    subnet_id           = string
     security_group_type = string
     user_data_type      = string
     tags                = map(string)
