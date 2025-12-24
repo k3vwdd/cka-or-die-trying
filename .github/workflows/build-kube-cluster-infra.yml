@@ -1,9 +1,6 @@
 name: "Terraform Infrastructure Build Management Pipeline with GitHub Actions"
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 env:
