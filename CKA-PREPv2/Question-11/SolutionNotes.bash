@@ -1,0 +1,33 @@
+cat <<'EOF' > ds.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ds-important
+  namespace: project-tiger
+  labels:
+    id: ds-important
+    uuid: 18426a0b-5f59-4e10-923f-c0e078e82462
+spec:
+  selector:
+    matchLabels:
+      id: ds-important
+      uuid: 18426a0b-5f59-4e10-923f-c0e078e82462
+  template:
+    metadata:
+      labels:
+        id: ds-important
+        uuid: 18426a0b-5f59-4e10-923f-c0e078e82462
+    spec:
+      tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
+      containers:
+      - name: ds-important
+        image: httpd:2-alpine
+        resources:
+          requests:
+            cpu: 10m
+            memory: 10Mi
+EOF
+
+kubectl apply -f ds.yaml
