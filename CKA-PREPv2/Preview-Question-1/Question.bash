@@ -8,6 +8,7 @@
 # 2. Server certificate expiration date
 # 3. Is client certificate authentication enabled
 
-# Use the lab manifest and cert created by setup:
-# /opt/course/p1/etcd.yaml
-# /opt/course/p1/server.crt
+# Use the real static pod manifest and etcd server certificate from the node.
+# Typical paths:
+# - /etc/kubernetes/manifests/etcd.yaml
+# - /etc/kubernetes/pki/etcd/server.crt

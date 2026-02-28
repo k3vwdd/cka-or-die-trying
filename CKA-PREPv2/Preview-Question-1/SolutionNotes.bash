@@ -1,6 +1,6 @@
-KEY_PATH=$(grep -oE -- '--key-file=[^ ]+' /opt/course/p1/etcd.yaml | cut -d= -f2)
-CERT_PATH=$(grep -oE -- '--cert-file=[^ ]+' /opt/course/p1/etcd.yaml | cut -d= -f2)
-CLIENT_AUTH=$(grep -oE -- '--client-cert-auth=[^ ]+' /opt/course/p1/etcd.yaml | cut -d= -f2)
+KEY_PATH=$(grep -oE -- '--key-file=[^ ]+' /etc/kubernetes/manifests/etcd.yaml | cut -d= -f2)
+CERT_PATH=$(grep -oE -- '--cert-file=[^ ]+' /etc/kubernetes/manifests/etcd.yaml | cut -d= -f2)
+CLIENT_AUTH=$(grep -oE -- '--client-cert-auth=[^ ]+' /etc/kubernetes/manifests/etcd.yaml | cut -d= -f2)
 EXPIRATION=$(openssl x509 -noout -enddate -in "$CERT_PATH" | cut -d= -f2)
 
 if [ "$CLIENT_AUTH" = "true" ]; then

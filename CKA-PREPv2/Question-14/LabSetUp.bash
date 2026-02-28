@@ -4,30 +4,22 @@ set -e
 mkdir -p /opt/course/14
 
 CERT_PATH=/etc/kubernetes/pki/apiserver.crt
-
-if [ ! -f "$CERT_PATH" ]; then
-  CERT_PATH=/opt/course/14/apiserver.crt
-  openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-    -keyout /opt/course/14/apiserver.key \
-    -out /opt/course/14/apiserver.crt \
-    -subj "/CN=kube-apiserver-lab" >/dev/null 2>&1
-fi
+[ -f "$CERT_PATH" ] || {
+  echo "Missing ${CERT_PATH}"
+  echo "Run this question on a control-plane node with kubeadm-managed certs."
+  exit 1
+}
 
 echo "$CERT_PATH" > /opt/course/14/cert-path
 
 openssl x509 -noout -enddate -in "$CERT_PATH" | cut -d= -f2 > /opt/course/14/expected-expiration.txt
 
-if command -v kubeadm >/dev/null 2>&1; then
-  kubeadm certs check-expiration > /opt/course/14/kubeadm-check-expiration.txt 2>/dev/null || true
-fi
+command -v kubeadm >/dev/null 2>&1 || {
+  echo "kubeadm is required for this question"
+  exit 1
+}
 
-if [ ! -s /opt/course/14/kubeadm-check-expiration.txt ]; then
-  EXP=$(cat /opt/course/14/expected-expiration.txt)
-  cat > /opt/course/14/kubeadm-check-expiration.txt <<EOF
-CERTIFICATE                EXPIRES                  RESIDUAL TIME   CERTIFICATE AUTHORITY   EXTERNALLY MANAGED
-apiserver                  ${EXP}      --            ca                      no
-EOF
-fi
+kubeadm certs check-expiration > /opt/course/14/kubeadm-check-expiration.txt
 
 rm -f /opt/course/14/expiration /opt/course/14/kubeadm-renew-certs.sh
 

@@ -15,6 +15,14 @@ EXPECTED_CURRENT=$(kubectl --kubeconfig /opt/course/1/kubeconfig config current-
 ACTUAL_CURRENT=$(cat /opt/course/1/current-context)
 [ "$EXPECTED_CURRENT" = "$ACTUAL_CURRENT" ] || { echo "FAIL: current-context incorrect"; exit 1; }
 
-cmp -s /opt/course/1/cert /opt/course/1/expected-cert.pem || { echo "FAIL: decoded certificate content incorrect"; exit 1; }
+EXPECTED_B64=$(kubectl --kubeconfig /opt/course/1/kubeconfig config view --raw \
+  -o jsonpath="{.users[?(@.name=='account-0027@internal')].user.client-certificate-data}")
+
+[ -n "$EXPECTED_B64" ] || { echo "FAIL: could not locate client-certificate-data for account-0027@internal"; exit 1; }
+
+TMP_EXPECTED=$(mktemp)
+trap 'rm -f "$TMP_EXPECTED"' EXIT
+printf "%s" "$EXPECTED_B64" | base64 -d > "$TMP_EXPECTED"
+cmp -s /opt/course/1/cert "$TMP_EXPECTED" || { echo "FAIL: decoded certificate content incorrect"; exit 1; }
 
 echo "SUCCESS: Question 1 passed"
