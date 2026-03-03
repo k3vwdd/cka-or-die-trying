@@ -1,3 +1,10 @@
 echo -e "set number relativenumber\nsyntax on\nfiletype plugin indent on\nautocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab\nset background=dark" >> /root/.vimrc && echo -e "set -g mouse on\nunbind C-b\nset-option -g prefix C-a\nbind-key C-a send-prefix\nset -g status-style 'bg=#333333 fg=#5eacd3'\nset -g default-terminal \"xterm-256color\"\nset -ga terminal-overrides \",xterm-256color:Tc\"" >> /root/.tmux.conf && tmux kill-server 2>/dev/null; echo "Done - restart tmux"
 
+
+echo -e "export PS1='\u@\h:\W\\$ '" >> /root/.bashrc && \
+echo -e "set number relativenumber\nsyntax on\nfiletype plugin indent on\nautocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab\nset background=dark" >> /root/.vimrc && \
+echo -e "set -g mouse on\nunbind C-b\nset-option -g prefix C-a\nbind-key C-a send-prefix\nset -g status-style 'bg=#333333 fg=#5eacd3'\nset -g default-terminal \"xterm-256color\"\nset -ga terminal-overrides \",xterm-256color:Tc\"" >> /root/.tmux.conf && \
+tmux kill-server 2>/dev/null; \
+echo "Done - restart tmux and reload bash"
+
 git clone --filter=blob:none --sparse https://github.com/k3vwdd/cka-or-die-trying.git && cd cka-or-die-trying && git sparse-checkout set CKA-PREPv2

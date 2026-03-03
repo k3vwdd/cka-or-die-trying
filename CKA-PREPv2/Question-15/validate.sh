@@ -11,7 +11,18 @@ kubectl -n "$NS" get networkpolicy "$NP" -o json > /tmp/q15-np.json
 
 BACKEND_SELECTOR=$(kubectl -n "$NS" get networkpolicy "$NP" -o jsonpath='{.spec.podSelector.matchLabels.app}')
 [ "$BACKEND_SELECTOR" = "backend" ] || { echo "FAIL: podSelector app=$BACKEND_SELECTOR expected backend"; exit 1; }
-grep -Eq '"policyTypes"[[:space:]]*:[[:space:]]*\[[[:space:]]*"Egress"[[:space:]]*\]' /tmp/q15-np.json || { echo "FAIL: policyTypes must be Egress only"; exit 1; }
+
+POLICY_TYPES=$(kubectl -n "$NS" get networkpolicy "$NP" -o jsonpath='{.spec.policyTypes[*]}')
+INGRESS_RULES=$(kubectl -n "$NS" get networkpolicy "$NP" -o jsonpath='{.spec.ingress[*].from[*].podSelector.matchLabels.app}')
+
+# Accept either:
+# 1) explicit policyTypes: [Egress]
+# 2) omitted policyTypes with no ingress rules (API behavior defaults to Egress because egress rules exist)
+if [ -n "$POLICY_TYPES" ]; then
+  [ "$POLICY_TYPES" = "Egress" ] || { echo "FAIL: policyTypes must be Egress only (got: $POLICY_TYPES)"; exit 1; }
+else
+  [ -z "$INGRESS_RULES" ] || { echo "FAIL: ingress rules detected while policyTypes omitted"; exit 1; }
+fi
 
 grep -Eq '"app"[[:space:]]*:[[:space:]]*"db1"' /tmp/q15-np.json || { echo "FAIL: db1 target missing"; exit 1; }
 grep -Eq '"port"[[:space:]]*:[[:space:]]*1111' /tmp/q15-np.json || { echo "FAIL: port 1111 missing"; exit 1; }
