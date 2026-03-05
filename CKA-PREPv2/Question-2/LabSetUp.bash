@@ -19,29 +19,7 @@ spec:
     enableSFTP: false
 EOF
 
-kubectl apply -f - <<'EOF'
-apiVersion: apiextensions.k8s.io/v1
-kind: CustomResourceDefinition
-metadata:
-  name: tenants.minio.min.io
-spec:
-  group: minio.min.io
-  names:
-    kind: Tenant
-    listKind: TenantList
-    plural: tenants
-    singular: tenant
-  scope: Namespaced
-  versions:
-  - name: v2
-    served: true
-    storage: true
-    schema:
-      openAPIV3Schema:
-        type: object
-        x-kubernetes-preserve-unknown-fields: true
-EOF
-
 kubectl delete ns minio --ignore-not-found >/dev/null 2>&1 || true
+kubectl delete crd tenants.minio.min.io miniojobs.job.min.io policybindings.sts.min.io --ignore-not-found >/dev/null 2>&1 || true
 
 echo "Question 2 environment ready at /opt/course/2"
