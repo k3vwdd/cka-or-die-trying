@@ -1,4 +1,4 @@
-# CKA-PREPv2
+# CKA-PREPv3
 
 ## Introduction
 This repository contains hands-on CKA-style labs for Kubernetes practice environments.
