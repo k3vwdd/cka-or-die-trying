@@ -1,13 +1,38 @@
-# CKA Practice Lab: PV PVC Dynamic Provisioning
+#!/bin/bash
+# Question 10 | PV PVC Dynamic Provisioning
 
-# 1. Create a StorageClass named local-backup with:
-#    - provisioner: rancher.io/local-path
-#    - volumeBindingMode: WaitForFirstConsumer
-#    - reclaim policy set to retain PV after PVC deletion
-# 2. Adjust /opt/course/10/backup.yaml so that backups are stored on a PVC.
-#    - Add a PVC requesting 50Mi storage, using StorageClass local-backup.
-#    - Use the PVC in place of any emptyDir volume in the backup Job manifest.
-# 3. Deploy the changes.
-# 4. Verify that:
-#    - The backup Job completes once.
-#    - The PVC is bound to a newly created PV.
+cat <<'EOF'
+There is a backup Job that needs to be adjusted to store backups on a PVC.
+
+Complete the following tasks:
+
+1. Create a StorageClass named local-backup.
+
+2. Configure the StorageClass with:
+   - provisioner: rancher.io/local-path
+   - volumeBindingMode: WaitForFirstConsumer
+   - reclaimPolicy: Retain
+
+3. Adjust the file /opt/course/10/backup.yaml so the backup Job uses a PersistentVolumeClaim instead of emptyDir.
+
+4. In /opt/course/10/backup.yaml, add a PersistentVolumeClaim with:
+   - name: backup-pvc
+   - namespace: project-bern
+   - accessModes: ReadWriteOnce
+   - requested storage: 50Mi
+   - storageClassName: local-backup
+
+5. In the Job pod template, replace the backup volume definition:
+   - remove emptyDir
+   - use the PersistentVolumeClaim named backup-pvc
+
+6. Deploy the changes.
+
+7. Verify the following:
+   - the Job completes once
+   - the PVC is bound
+   - the PVC is bound to a newly created PV
+
+Note:
+- To re-run a Job, delete it and create/apply it again.
+EOF

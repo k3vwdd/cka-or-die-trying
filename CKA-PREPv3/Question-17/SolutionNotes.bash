@@ -1,19 +1,19 @@
-# 1. Inspect operator pod logs to find out which resources are forbidden (forbidden errors)
+#!/bin/bash
+# Inspect current operator logs to find which custom resources are forbidden
 kubectl -n operator-prod get pods
 OP_POD=$(kubectl -n operator-prod get pods -l app=operator -o jsonpath='{.items[0].metadata.name}')
 kubectl -n operator-prod logs "$OP_POD"
 
-# 2. Update the base RBAC role to allow listing the required CRDs (e.g. students, classes)
-# Edit: /opt/course/17/operator/base/rbac.yaml
-# Add a rule like:
-# - apiGroups: ["education.killer.sh"]
-#   resources: ["students", "classes"]
-#   verbs: ["list"]
+# Update the base RBAC role
+# File: /opt/course/17/operator/base/rbac.yaml
+# Ensure Role operator-role contains rules allowing list on the required CRDs:
+# apiGroups: ["education.killer.sh"]
+# resources: ["students", "classes"]
+# verbs: ["list"]
 
-# 3. Add student4 to the base students manifest
-# Edit: /opt/course/17/operator/base/students.yaml
-# Add:
-# ---
+# Update the base students manifest
+# File: /opt/course/17/operator/base/students.yaml
+# Add a new Student resource:
 # apiVersion: education.killer.sh/v1
 # kind: Student
 # metadata:
@@ -22,9 +22,9 @@ kubectl -n operator-prod logs "$OP_POD"
 #   name: Any Name
 #   description: Any Description
 
-# 4. Deploy the updated prod Kustomize overlay
+# Deploy the updated prod overlay
 kubectl kustomize /opt/course/17/operator/prod | kubectl apply -f -
 
-# 5. Confirm no RBAC errors and student4 exists in the cluster
+# Verify the operator no longer reports the RBAC issue and the new resource exists
 kubectl -n operator-prod logs "$OP_POD"
-kubectl -n operator-prod get students || echo 'Student CRD check - manual if not supported by mock'
+kubectl -n operator-prod get students

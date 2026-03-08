@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
-# Clean up potential pre-existing pod
-target_pod=multi-container-playground
-kubectl delete pod $target_pod --ignore-not-found --namespace=default
+# Intentionally minimal setup for this task.
+# Ensure any old resources from previous attempts do not interfere.
+kubectl delete pod multi-container-playground -n default --ignore-not-found=true >/dev/null 2>&1 || true
+rm -f /tmp/multi-container-playground.yaml

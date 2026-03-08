@@ -1,20 +1,32 @@
-# 1. Check cluster nodes (controlplane should show NotReady/unavailable)
+#!/bin/bash
+# Check node status
 kubectl get nodes
-# 2. Check kubelet service status
+
+# Check kubelet service state
 systemctl status kubelet
-# 3. Start kubelet and check for errors
+
+# Try starting kubelet and inspect status again
 systemctl start kubelet
 systemctl status kubelet
-# 4. Check where the kubelet binary is
+
+# Check kubelet binary path
 whereis kubelet
-# 5. Fix ExecStart path in /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf to point to /usr/bin/kubelet
-# 6. Reload systemd and restart kubelet
+
+# Fix kubelet systemd drop-in
+vi /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+# Ensure the final command uses:
+# ExecStart=/usr/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS
+
+# Reload systemd and restart kubelet
 systemctl daemon-reload
 systemctl restart kubelet
 systemctl status kubelet
-# 7. Confirm node is Ready
+
+# Confirm node is Ready
 kubectl get nodes
-# 8. Create Pod
+
+# Create the requested Pod
 kubectl run success --image=nginx:1-alpine -n default
-# 9. Verify the Pod
+
+# Verify Pod is running
 kubectl get pod success -n default -o wide

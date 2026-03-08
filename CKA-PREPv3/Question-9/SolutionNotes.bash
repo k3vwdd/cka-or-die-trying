@@ -1,4 +1,5 @@
-# 1) Stop kube-scheduler temporarily
+#!/bin/bash
+# 1) Stop kube-scheduler temporarily (static pod)
 mv /etc/kubernetes/manifests/kube-scheduler.yaml /etc/kubernetes/
 
 # 2) Confirm scheduler pod is gone

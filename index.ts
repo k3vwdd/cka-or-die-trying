@@ -18,15 +18,24 @@ const GeneratedLabSchema = z.object({
 type GeneratedLab = z.infer<typeof GeneratedLabSchema>;
 
 const TARGET_FOLDER = "CKA-PREPv3";
+const OPENAI_MODEL = process.env.OPENAI_MODEL ?? "gpt-5.4-2026-03-05";
+const FORCE_REGENERATE_ALL = process.env.FORCE_REGENERATE_ALL === "true";
 
 async function generateLabBatch() {
+  console.log(`Using model: ${OPENAI_MODEL}`);
+  if (FORCE_REGENERATE_ALL) {
+    console.log("Force mode enabled: existing labs will be regenerated");
+  }
+
   for (const labInput of labInputs) {
     if (!isLabInputReady(labInput.question, labInput.fullAnswer)) {
-      console.log(`Skipping Question-${labInput.id}: question/answer not filled`);
+      console.log(
+        `Skipping Question-${labInput.id}: question/answer not filled`,
+      );
       continue;
     }
 
-    if (await labAlreadyGenerated(labInput.id)) {
+    if (!FORCE_REGENERATE_ALL && (await labAlreadyGenerated(labInput.id))) {
       console.log(`Skipping Question-${labInput.id}: already generated`);
       continue;
     }
@@ -75,12 +84,14 @@ async function generateLabFiles(
   fullAnswer: string,
 ): Promise<GeneratedLab> {
   const resp = await openai.responses.parse({
-    model: "gpt-4.1",
+    model: OPENAI_MODEL,
     input: [
       {
         role: "system",
-        content:
-          "You create deterministic CKA practice lab files from provided source material.",
+        content: `You create deterministic CKA practice lab files from provided source material.
+          Be sure to create detailed validation on all work in order to pass
+        the validation very similar to killershells environment specs along with killercodas cka
+        training ground`,
       },
       {
         role: "user",

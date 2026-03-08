@@ -1,19 +1,18 @@
 #!/bin/bash
 set -e
 
-# Create the namespace
-kubectl create namespace secret
+kubectl get namespace secret >/dev/null 2>&1 || kubectl create namespace secret >/dev/null
 
-# Copy secret1.yaml to /opt/course/11/ if not already present (TODO if needed)
-# mkdir -p /opt/course/11
-# cp /path/to/source/secret1.yaml /opt/course/11/secret1.yaml
+kubectl -n secret delete pod secret-pod --ignore-not-found >/dev/null 2>&1 || true
+kubectl -n secret delete secret secret2 --ignore-not-found >/dev/null 2>&1 || true
 
-# Apply secret1.yaml manifest in the correct namespace
-kubectl apply -f /opt/course/11/secret1.yaml -n secret
+if kubectl get secret -n secret >/dev/null 2>&1; then
+  if kubectl -n secret get -f /opt/course/11/secret1.yaml >/dev/null 2>&1; then
+    secret_name=$(kubectl -n secret get -f /opt/course/11/secret1.yaml -o jsonpath='{.metadata.name}' 2>/dev/null || true)
+    if [ -n "${secret_name:-}" ]; then
+      kubectl -n secret delete secret "$secret_name" --ignore-not-found >/dev/null 2>&1 || true
+    fi
+  fi
+fi
 
-# Pre-clean secrets and pod for idempotency
-kubectl -n secret delete secrets secret2 --ignore-not-found
-kubectl -n secret delete pod secret-pod --ignore-not-found
-
-# Create secret2
-kubectl -n secret create secret generic secret2 --from-literal=user=user1 --from-literal=pass=1234
+rm -f /tmp/secret-pod.yaml

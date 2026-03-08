@@ -1,18 +1,43 @@
 #!/bin/bash
 set -euo pipefail
 
-# Validate find_pods.sh exists and contains correct command
-if [ ! -f /opt/course/5/find_pods.sh ]; then
-  echo "Missing: /opt/course/5/find_pods.sh" >&2
-  exit 1
-fi
-grep -Fxq "kubectl get pods -A --sort-by=.metadata.creationTimestamp" /opt/course/5/find_pods.sh || { echo "Incorrect contents in find_pods.sh" >&2; exit 1; }
+DIR="/opt/course/5"
+FILE1="$DIR/find_pods.sh"
+FILE2="$DIR/find_pods_uid.sh"
+EXPECTED1="kubectl get pods -A --sort-by=.metadata.creationTimestamp"
+EXPECTED2="kubectl get pods -A --sort-by=.metadata.uid"
 
-# Validate find_pods_uid.sh exists and contains correct command
-if [ ! -f /opt/course/5/find_pods_uid.sh ]; then
-  echo "Missing: /opt/course/5/find_pods_uid.sh" >&2
+fail() {
+  echo "FAIL: $1"
   exit 1
-fi
-grep -Fxq "kubectl get pods -A --sort-by=.metadata.uid" /opt/course/5/find_pods_uid.sh || { echo "Incorrect contents in find_pods_uid.sh" >&2; exit 1; }
+}
 
-echo 'Validation successful!'
+pass() {
+  echo "PASS: $1"
+}
+
+[ -d "$DIR" ] || fail "Directory $DIR does not exist"
+pass "Directory $DIR exists"
+
+[ -f "$FILE1" ] || fail "$FILE1 does not exist"
+pass "$FILE1 exists"
+
+[ -f "$FILE2" ] || fail "$FILE2 does not exist"
+pass "$FILE2 exists"
+
+CONTENT1="$(tr -d '\r' < "$FILE1" | sed '/^[[:space:]]*$/d')"
+CONTENT2="$(tr -d '\r' < "$FILE2" | sed '/^[[:space:]]*$/d')"
+
+[ "$CONTENT1" = "$EXPECTED1" ] || fail "$FILE1 content is incorrect. Expected: $EXPECTED1"
+pass "$FILE1 content is correct"
+
+[ "$CONTENT2" = "$EXPECTED2" ] || fail "$FILE2 content is incorrect. Expected: $EXPECTED2"
+pass "$FILE2 content is correct"
+
+sh "$FILE1" >/dev/null 2>&1 || fail "$FILE1 failed to execute"
+pass "$FILE1 executes successfully"
+
+sh "$FILE2" >/dev/null 2>&1 || fail "$FILE2 failed to execute"
+pass "$FILE2 executes successfully"
+
+echo "All validations passed"

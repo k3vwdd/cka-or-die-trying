@@ -1,26 +1,23 @@
 #!/bin/bash
 set -euo pipefail
 
-output_file="/opt/course/8/controlplane-components.txt"
-expected="kubelet: process
-kube-apiserver: static-pod
-kube-scheduler: static-pod
-kube-controller-manager: static-pod
-etcd: static-pod
-dns: pod coredns"
+FILE="/opt/course/8/controlplane-components.txt"
 
-if [ ! -f "$output_file" ]; then
-  echo "FAIL: $output_file does not exist" >&2
+fail() {
+  echo "FAIL: $1"
   exit 1
-fi
+}
 
-actual=$(cat "$output_file")
+pass() {
+  echo "PASS"
+  exit 0
+}
 
-if [ "$actual" != "$expected" ]; then
-  echo "FAIL: Output in $output_file does not match expected format." >&2
-  echo "Expected:\n$expected" >&2
-  echo "Got:\n$actual" >&2
-  exit 2
-fi
+[ -f "$FILE" ] || fail "Expected file $FILE to exist"
 
-echo "PASS: Controlplane Components file is correct."
+line_count=$(wc -l < "$FILE")
+[ "$line_count" -eq 6 ] || fail "Expected exactly 6 lines in $FILE, got $line_count"
+
+allowed_type='(not-installed|process|static-pod|pod)'
+
+grep -Eq '^kubelet: '

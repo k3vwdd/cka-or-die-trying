@@ -1,10 +1,14 @@
-# In the Namespace default:
-# 1. Create a Pod named ready-if-service-ready using image nginx:1-alpine.
-# 2. Add a livenessProbe to this Pod that executes the command 'true'.
-# 3. Add a readinessProbe to this Pod that checks reachability of http://service-am-i-ready:80 (e.g., by running: wget -T2 -O- http://service-am-i-ready:80).
-# 4. Start the Pod and confirm it is NOT Ready (the readiness probe should fail).
+#!/bin/bash
+# Question 4 | Pod Ready if Service is reachable
+
+# In Namespace default:
+# - Create a Pod named ready-if-service-ready using image nginx:1-alpine
+# - Add a livenessProbe that executes command true
+# - Add a readinessProbe that checks reachability of http://service-am-i-ready:80
+#   (for example: wget -T2 -O- http://service-am-i-ready:80)
+# - Start the Pod and confirm it is not Ready due to the readiness probe
 #
 # Then:
-# 5. Create a second Pod named am-i-ready with image nginx:1-alpine and label id=cross-server-ready.
-# 6. The existing Service service-am-i-ready should select this second Pod as an endpoint.
-# 7. Confirm the first Pod transitions from Not Ready to Ready, as the readiness probe should now pass.
+# - Create a second Pod named am-i-ready with image nginx:1-alpine and label id=cross-server-ready
+# - The existing Service service-am-i-ready should select that second Pod as an endpoint
+# - Confirm the first Pod transitions to Ready
