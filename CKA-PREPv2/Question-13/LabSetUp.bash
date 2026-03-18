@@ -10,6 +10,8 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   name: gatewayclasses.gateway.networking.k8s.io
+  annotations:
+    "api-approved.kubernetes.io": "https://github.com/kubernetes/kubernetes/pull/78458"
 spec:
   group: gateway.networking.k8s.io
   names:
@@ -31,6 +33,8 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   name: gateways.gateway.networking.k8s.io
+    annotations:
+      "api-approved.kubernetes.io": "https://github.com/kubernetes/kubernetes/pull/78458"
 spec:
   group: gateway.networking.k8s.io
   names:
@@ -52,6 +56,8 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   name: httproutes.gateway.networking.k8s.io
+  annotations:
+    "api-approved.kubernetes.io": "https://github.com/kubernetes/kubernetes/pull/78458"
 spec:
   group: gateway.networking.k8s.io
   names:
@@ -77,7 +83,7 @@ kind: GatewayClass
 metadata:
   name: nginx
 spec:
-  controllerName: example.net/mock-gateway-controller
+  controllerName: nginx.org/nginx-gateway-controller
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
