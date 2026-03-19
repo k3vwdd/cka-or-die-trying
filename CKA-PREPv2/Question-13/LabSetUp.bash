@@ -13,7 +13,7 @@ kind: GatewayClass
 metadata:
   name: nginx
 spec:
-  controllerName: nginx.org/nginx-gateway-controller
+  controllerName: gateway.nginx.org/nginx-gateway-controller
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
