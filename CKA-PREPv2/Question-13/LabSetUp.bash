@@ -3,79 +3,9 @@ set -e
 
 mkdir -p /opt/course/13
 kubectl create ns project-r500 --dry-run=client -o yaml | kubectl apply -f -
-
-if ! kubectl get crd gatewayclasses.gateway.networking.k8s.io >/dev/null 2>&1; then
-kubectl apply -f - <<'EOF'
-apiVersion: apiextensions.k8s.io/v1
-kind: CustomResourceDefinition
-metadata:
-  name: gatewayclasses.gateway.networking.k8s.io
-  annotations:
-    "api-approved.kubernetes.io": "https://github.com/kubernetes/kubernetes/pull/78458"
-spec:
-  group: gateway.networking.k8s.io
-  names:
-    kind: GatewayClass
-    listKind: GatewayClassList
-    plural: gatewayclasses
-    singular: gatewayclass
-  scope: Cluster
-  versions:
-  - name: v1
-    served: true
-    storage: true
-    schema:
-      openAPIV3Schema:
-        type: object
-        x-kubernetes-preserve-unknown-fields: true
----
-apiVersion: apiextensions.k8s.io/v1
-kind: CustomResourceDefinition
-metadata:
-  name: gateways.gateway.networking.k8s.io
-    annotations:
-      "api-approved.kubernetes.io": "https://github.com/kubernetes/kubernetes/pull/78458"
-spec:
-  group: gateway.networking.k8s.io
-  names:
-    kind: Gateway
-    listKind: GatewayList
-    plural: gateways
-    singular: gateway
-  scope: Namespaced
-  versions:
-  - name: v1
-    served: true
-    storage: true
-    schema:
-      openAPIV3Schema:
-        type: object
-        x-kubernetes-preserve-unknown-fields: true
----
-apiVersion: apiextensions.k8s.io/v1
-kind: CustomResourceDefinition
-metadata:
-  name: httproutes.gateway.networking.k8s.io
-  annotations:
-    "api-approved.kubernetes.io": "https://github.com/kubernetes/kubernetes/pull/78458"
-spec:
-  group: gateway.networking.k8s.io
-  names:
-    kind: HTTPRoute
-    listKind: HTTPRouteList
-    plural: httproutes
-    singular: httproute
-  scope: Namespaced
-  versions:
-  - name: v1
-    served: true
-    storage: true
-    schema:
-      openAPIV3Schema:
-        type: object
-        x-kubernetes-preserve-unknown-fields: true
-EOF
-fi
+kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.5.0/standard-install.yaml
+helm pull oci://ghcr.io/nginx/charts/nginx-gateway-fabric --untar && cd nginx-gateway-fabric
+helm install ngf . --create-namespace -n nginx-gateway
 
 kubectl apply -f - <<'EOF'
 apiVersion: gateway.networking.k8s.io/v1
@@ -96,6 +26,7 @@ spec:
   - name: http
     protocol: HTTP
     port: 80
+    nodePort: 30080
 EOF
 
 kubectl -n project-r500 apply -f - <<'EOF'
@@ -104,7 +35,7 @@ kind: ConfigMap
 metadata:
   name: web-desktop-site
 data:
-  index.html: |
+  desktop/index.html: |
     Web Desktop App
 ---
 apiVersion: v1
@@ -112,7 +43,7 @@ kind: ConfigMap
 metadata:
   name: web-mobile-site
 data:
-  index.html: |
+  mobile/index.html: |
     Web Mobile App
 ---
 apiVersion: apps/v1
