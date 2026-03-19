@@ -5,28 +5,34 @@ mkdir -p /opt/course/13
 kubectl create ns project-r500 --dry-run=client -o yaml | kubectl apply -f -
 kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.5.0/standard-install.yaml
 helm pull oci://ghcr.io/nginx/charts/nginx-gateway-fabric --untar && cd nginx-gateway-fabric
-helm install ngf . --create-namespace -n nginx-gateway
+helm install ngf oci://ghcr.io/nginx/charts/nginx-gateway-fabric \
+  --create-namespace -n nginx-gateway \
+  --set nginx.service.type=NodePort \
+  --set-json 'nginx.service.nodePorts=[{"port":30080,"listenerPort":80}]'
+  --set gatewayClass.name=gateway
 
 kubectl apply -f - <<'EOF'
-apiVersion: gateway.networking.k8s.io/v1
-kind: GatewayClass
-metadata:
-  name: nginx
-spec:
-  controllerName: gateway.nginx.org/nginx-gateway-controller
----
+# the install above from helm installed a gateway class already
+#
+#apiVersion: gateway.networking.k8s.io/v1
+#kind: GatewayClass
+#metadata:
+#  name: nginx
+#spec:
+#  controllerName: gateway.nginx.org/nginx-gateway-controller
+#---
+
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: main
   namespace: project-r500
 spec:
-  gatewayClassName: nginx
+  gatewayClassName: gateway
   listeners:
   - name: http
     protocol: HTTP
     port: 80
-    nodePort: 30080
 EOF
 
 kubectl -n project-r500 apply -f - <<'EOF'
