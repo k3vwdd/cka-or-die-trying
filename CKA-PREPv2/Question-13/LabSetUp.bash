@@ -99,6 +99,22 @@ spec:
 EOF
 
 kubectl -n project-r500 apply -f - <<'EOF'
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-desktop-site
+data:
+  index.html: |
+    Web Desktop App
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-mobile-site
+data:
+  index.html: |
+    Web Mobile App
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -116,6 +132,13 @@ spec:
       containers:
       - name: web
         image: nginx:stable
+        volumeMounts:
+        - name: site-content
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: site-content
+        configMap:
+          name: web-desktop-site
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -134,6 +157,13 @@ spec:
       containers:
       - name: web
         image: nginx:stable
+        volumeMounts:
+        - name: site-content
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: site-content
+        configMap:
+          name: web-mobile-site
 ---
 apiVersion: v1
 kind: Service
